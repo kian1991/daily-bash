@@ -1,0 +1,82 @@
+#!/bin/bash
+
+quality=60
+lossless=false
+scale=100
+recursive=false
+overwrite=false
+force_overwrite=false
+
+script_name=$(basename "$0")
+help_message="Usage: $script_name [-s scale] [-q quality] [-x] [-r] [-l] [-v] file_name"
+
+while getopts "s:q:xrlvhf" flag; do
+  case "$flag" in
+    s) scale="$OPTARG" ;;
+    q) quality="$OPTARG" ;;
+    x) overwrite=true ;;
+    r) recursive=true ;;
+    l) lossless=true ;;
+    f) force_overwrite=true ;;
+    h) echo "$help_message"
+       exit 0 ;;
+    *) 
+      echo "Invalid option."
+      echo "$help_message"
+      exit 1 ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+if [ -z "$1" ]; then
+  echo "Please provide at least one file or pattern (e.g., '*.jpg')"
+  echo "$help_message"
+  exit 1
+fi
+
+files=("$@")
+
+if [ "${#files[@]}" -eq 0 ]; then
+  echo "No matching files found."
+  exit 1
+fi
+
+  printf "%-30s | %-20s | %-20s | %-20s\n" "Original File" "New File Size (MB)" "Compression Ratio" "Space Saved (MB)"
+  printf "%-30s | %-20s | %-20s | %-20s\n" "------------------------------" "--------------------" "--------------------" "--------------------"
+
+
+for file_name in "${files[@]}"; do
+  if [ ! -f "$file_name" ]; then
+    echo "File not found: $file_name"
+    continue
+  fi
+
+  new_file_name="${file_name%.*}.webp"
+  file_size_pre_in_mb=$(stat -f%z "$file_name")
+  file_size_pre_in_mb=$(echo "scale=2; $file_size_pre_in_mb / 1048576" | bc)
+
+
+
+  magick mogrify -resize "$scale%" -format webP -quality "$quality" -define "webp:lossless=$lossless" "$file_name"
+
+  file_size_post_in_mb=$(stat -f%z "$new_file_name")
+  file_size_post_in_mb=$(echo "scale=2; $file_size_post_in_mb / 1048576" | bc)
+
+  if [ "$overwrite" = true ]; then
+    if [ "$force_overwrite" = true ]; then
+      rm "$file_name"
+    else
+      echo "Overwriting option is enabled. Removing the original file?"
+      read -p "Do you want to remove the original file? (y/n) " -n 1 -r
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        rm "$file_name"
+      fi
+    fi
+  fi
+
+  compression_ratio=$(echo "scale=2; $file_size_pre_in_mb / $file_size_post_in_mb" | bc)
+  space_saved=$(echo "scale=2; $file_size_pre_in_mb - $file_size_post_in_mb" | bc)
+  printf "%-30s | %-20s | %-20s | %-20s\n" "$file_name" "$file_size_post_in_mb" "$compression_ratio" "$space_saved"
+
+done
