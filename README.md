@@ -4,12 +4,10 @@ This is a collection of bash scripts that I have written to automate various tas
 
 ## Scripts
 
-
 # `webimg`
 
 A bash script to compress and convert images to WebP format efficiently.
 
----
 
 ## **Prerequisites**
 
@@ -33,7 +31,6 @@ brew install imagemagick
 - Configurable compression quality, scale, and lossless mode.
 - Option to overwrite original files or keep them.
 
----
 
 ## **Usage**
 
@@ -49,14 +46,12 @@ brew install imagemagick
 - `-f`: Force overwrite without prompt.
 - `-v`: Enable verbose output with a compression summary.
 
----
 
 
 # `create-rtw`
 
 A bash script to create a new React project with TypeScript using Vite, pre-configured with Tailwind CSS, and some additional cleaning and setup steps for an optimized development environment.
 
----
 
 ## **Features**
 
@@ -66,7 +61,6 @@ A bash script to create a new React project with TypeScript using Vite, pre-conf
 - Integrates **Prettier** with a Tailwind CSS plugin for auto-sorting utilities.
 - Creates a minimalistic starting `App` with Tailwind styling.
 
----
 
 ## **Usage**
 
@@ -77,13 +71,12 @@ A bash script to create a new React project with TypeScript using Vite, pre-conf
 
 If `<project-name>` is not provided, the script will prompt you to enter a project name.
 
----
+
 
 # `copy-xterm-info`
 
 A bash script to synchronize the terminal capability database (`termcap`) with a remote host.
 
----
 
 ## **Features**
 
@@ -91,7 +84,6 @@ A bash script to synchronize the terminal capability database (`termcap`) with a
 - Uses `ssh` to securely send the configuration.
 - Simplifies ensuring terminal compatibility when working with remote systems.
 
----
 
 ## **Usage**
 
@@ -103,11 +95,9 @@ A bash script to synchronize the terminal capability database (`termcap`) with a
 
 - `<hostname>`: The hostname or IP address of the remote system to which the terminal capabilities should be synchronized.
 
----
 
 ## **Prerequisites**
 
 - SSH access to the remote host is required.
 - The `infocmp` and `tic` commands must be available on both the local and remote systems.
 
----
