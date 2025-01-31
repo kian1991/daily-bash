@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# check if the user has provided an argument
+if [ -z "$1" ]; then
+    echo "Usage: $(basename $0) <string>"
+    exit 1
+fi
+
+# encode the string to base64
+echo -n "$1" | base64
+
