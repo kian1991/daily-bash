@@ -1,40 +1,43 @@
 #!/bin/bash
-
-config_string="content: [\"./index.html\",\"./src/**/*.{js,ts,jsx,tsx}\",]"
-tailwind_directive='@tailwind base;\n@tailwind components;\n@tailwind utilities;'
-
-
-echo "Creating a new React project with TypeScript using Vite"
+echo "✨ Creating a new React project with TypeScript using Vite"
 
 if [ -z "$1" ]
 then
-    read -p "Enter the name of the project: " project_name
+    read -p "👉 Enter the name of the project: " project_name
 else
     project_name=$1
 fi
 
-npm create vite@latest $project_name -- --template react-ts
+npm create vite@latest $project_name -- --template react-swc-ts
 cd $project_name
 clear
-echo "Installing Tailwind CSS..."
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-# replace the content array in tailwind.config.js
-sed -i '' "s|content: \[\]|$config_string|g" tailwind.config.js
+echo "📦 Installing Tailwind CSS..."
+npm install tailwindcss @tailwindcss/vite
+
+# replace the vite config
+cat <<-END > vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import tailwindcss from '@tailwindcss/vite';
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+END
 # create a new index.css file with the tailwind directives
-echo "@tailwind base;
-@tailwind components;
-@tailwind utilities;" > src/index.css
+echo '@import "tailwindcss";' > src/index.css
 
 # clean up project
-echo "Yes I do the cleaning. 🧹"
+echo "🧹 Yes I do the cleaning."
 rm -rf src/assets/* src/App.tsx src/App.css
 rm public/vite.svg
 
 touch src/app.tsx
+
 echo "export function App() {
   return (
-    <div className=\"flex h-screen items-center justify-center bg-teal-950\">
+    <div className=\"flex min-h-screen items-center justify-center bg-teal-950\">
       <span className=\"animate-spin text-[14em]\">🦭</span>
     </div>
   );
@@ -42,7 +45,7 @@ echo "export function App() {
 " > src/app.tsx
 sed -i '' 's|import App from '\''./App.tsx'\''|import { App } from "./app";|' src/main.tsx
 # install auto-sort
-echo "Installing tailwind auto-sort..."
+echo "📦 Installing tailwind auto-sort..."
 npm install -D prettier prettier-plugin-tailwindcss
 
 # add the tailwindcss plugin to the prettier config
@@ -51,7 +54,7 @@ echo "{
 }" > .prettierrc
 
 # start the project
-echo "Opening the project..."
+echo "💾 Opening the project..."
 code .
 
 
